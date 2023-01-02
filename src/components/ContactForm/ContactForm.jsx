@@ -1,28 +1,23 @@
 import { useState } from 'react';
 import { AddContactForm } from './ContactForm.styled';
-import { useDispatch, useSelector } from 'react-redux';
 import { nanoid } from 'nanoid';
-
-import { addContact, getContacts } from 'redux/contactsSlice';
+import { useAddContactMutation, useGetContactsQuery } from 'redux/API';
+// import { addContact, getContacts } from 'redux/contactsSlice';
 
 export const ContactForm = () => {
-  const dispatch = useDispatch();
   const [contactName, setContactName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
-  const contacts = useSelector(getContacts)
+  const { data } = useGetContactsQuery();
+  const [addContact] = useAddContactMutation();
 
-  const newContact = (name, number) => {
+  const newContact = async (name, number) => {
     const includeName = name => {
-      return contacts.find(
-        e =>
-          e.name.toLocaleLowerCase() ===
-          name.toLocaleLowerCase()
+      return data.find(
+        e => e.name.toLocaleLowerCase() === name.toLocaleLowerCase()
       );
     };
     const includeNumber = () => {
-      return contacts.find(
-        e => e.number === number
-      );
+      return data.find(e => e.number === number);
     };
     const contact = {
       id: nanoid(10),
@@ -31,18 +26,16 @@ export const ContactForm = () => {
     };
     if (includeName(contact.name)) {
       return alert(`${contact.name} is already in contacts`);
-      
     }
     if (includeNumber(contact.number)) {
       return alert(`${contact.number} is already in contacts`);
     }
-    dispatch(addContact( contact ));
-  }
-
-  
-
-
-
+    try {
+      await addContact(contact);
+    } catch {
+      window.alert('Oh no, error...');
+    }
+  };
 
   const handleChange = e => {
     const event = e.target;
@@ -56,7 +49,7 @@ export const ContactForm = () => {
 
   const onSubmit = e => {
     e.preventDefault();
-    newContact(contactName, contactNumber)
+    newContact(contactName, contactNumber);
     setContactName('');
     setContactNumber('');
   };

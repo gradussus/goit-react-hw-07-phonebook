@@ -10,8 +10,15 @@ export const API = createApi({
       query: () => '/contacts',
       providesTags: ['Contacts'],
     }),
-    addContact: builder.query({}),
-    deleteContact: builder.query({}),
+    addContact: builder.mutation({
+      query: contact => ({
+        url: '/contacts',
+        method: 'POST',
+        body: contact,
+      }),
+      invalidatesTags: ['Contacts'],
+    }),
+    deleteContact: builder.mutation({}),
   }),
 });
 
