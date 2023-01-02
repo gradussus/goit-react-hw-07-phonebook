@@ -2,11 +2,10 @@ import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList ';
 import { Filter } from './Filter/Filter';
 import { Container } from './App.styled';
-import { getContacts } from 'redux/contactsSlice';
-import { useSelector } from 'react-redux';
+import { useGetContactsQuery } from 'redux/API';
 
 export const App = () => {
-  const contacts = useSelector(getContacts);
+  const { data, error, isLoading } = useGetContactsQuery();
 
   return (
     <Container>
@@ -14,7 +13,7 @@ export const App = () => {
       <ContactForm />
       <h2>Contacts</h2>
 
-      {contacts.length !== 0 ? (
+      {!isLoading && data.length !== 0 ? (
         <>
           <Filter />
           <ContactList />
@@ -25,6 +24,7 @@ export const App = () => {
           above and save them in this app
         </div>
       )}
+      {error && <div>Oh no... Something wrong</div>}
     </Container>
   );
 };

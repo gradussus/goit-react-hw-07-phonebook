@@ -1,15 +1,16 @@
 import { Item, List, DeleteBtn } from './ContactList.styled';
-import { getContacts, deleteContact } from 'redux/contactsSlice';
+import { deleteContact } from 'redux/contactsSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { getFilter } from 'redux/filterSlice';
+import { useGetContactsQuery } from 'redux/API';
 
 export const ContactList = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
+  const { data } = useGetContactsQuery();
   const filter = useSelector(getFilter);
 
   const onFilterChange = () => {
-    return contacts.filter(c =>
+    return data.filter(c =>
       c.name.toLowerCase().includes(filter.toLowerCase())
     );
   };
